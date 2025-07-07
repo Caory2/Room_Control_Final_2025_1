@@ -51,12 +51,14 @@ void room_control_update(room_control_t *room) {
     uint32_t current_time = HAL_GetTick();
     
     // State machine
-    switch (room->current_state) {
+    switch (room->current_state) {   
         case ROOM_STATE_LOCKED:
             // TODO: TAREA - Implementar lógica del estado LOCKED
             // - Mostrar mensaje "SISTEMA BLOQUEADO" en display
             // - Asegurar que la puerta esté cerrada
             // - Transición a INPUT_PASSWORD cuando se presione una tecla
+         
+
             break;
             
         case ROOM_STATE_INPUT_PASSWORD:
@@ -64,6 +66,8 @@ void room_control_update(room_control_t *room) {
             // - Mostrar asteriscos en pantalla (**)
             // - Manejar timeout (volver a LOCKED después de 10 segundos sin input)
             // - Verificar contraseña cuando se ingresen 4 dígitos
+
+
             
             // Example timeout logic:
             if (current_time - room->last_input_time > INPUT_TIMEOUT_MS) {
@@ -122,6 +126,24 @@ void room_control_process_key(room_control_t *room, char key) {
             // - Verificar si se completaron 4 dígitos
             // - Comparar con contraseña guardada
             // - Cambiar a UNLOCKED o ACCESS_DENIED según resultado
+
+            if (room->input_index < PASSWORD_LENGTH) {
+                room->input_buffer[room->input_index++] = key;
+                room->input_buffer[room->input_index] = '\0';  // Null-terminate the string
+                
+                // Update display with asterisks
+                room_control_update_display(room);
+                
+                if (room->input_index == PASSWORD_LENGTH) {
+                    // Check password
+                    if (strcmp(room->input_buffer, room->password) == 0) {
+                        room_control_change_state(room, ROOM_STATE_UNLOCKED);
+                    } else {
+                        room_control_change_state(room, ROOM_STATE_ACCESS_DENIED);
+                    }
+                }
+            }
+
             break;
             
         case ROOM_STATE_UNLOCKED:
