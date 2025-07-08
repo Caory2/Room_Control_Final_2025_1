@@ -263,8 +263,8 @@ static void room_control_update_display(room_control_t *room) {
         case ROOM_STATE_UNLOCKED:
             // TODO: Mostrar estado del sistema (temperatura, ventilador)
             ssd1306_SetCursor(10, 10);
-            //ssd1306_WriteString("ACCESO OK", Font_7x10, White);
-            snprintf(display_buffer, sizeof(display_buffer), "ADC:%d", (int)(room->current_temperature * 4095.0f / 50.0f));
+            ssd1306_WriteString("ACCESO OK", Font_7x10, White);
+            //snprintf(display_buffer, sizeof(display_buffer), "ADC:%d", (int)(room->current_temperature * 4095.0f / 50.0f));
             // snprintf(display_buffer, sizeof(display_buffer), "ADC:%.0f", room->current_temperature * 4095.0f / 50.0f);
             ssd1306_WriteString(display_buffer, Font_7x10, White);
 
