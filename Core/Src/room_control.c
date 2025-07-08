@@ -4,6 +4,11 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "main.h"
+
+
+extern TIM_HandleTypeDef htim3;
+
 // Default password
 static const char DEFAULT_PASSWORD[] = "1234";
 
@@ -66,8 +71,6 @@ void room_control_update(room_control_t *room) {
             // - Mostrar asteriscos en pantalla (**)
             // - Manejar timeout (volver a LOCKED después de 10 segundos sin input)
             // - Verificar contraseña cuando se ingresen 4 dígitos
-
-
             
             // Example timeout logic:
             if (current_time - room->last_input_time > INPUT_TIMEOUT_MS) {
@@ -249,14 +252,24 @@ static void room_control_update_display(room_control_t *room) {
             ssd1306_SetCursor(10, 10);
             ssd1306_WriteString("CLAVE:", Font_7x10, White);
             // Ejemplo: mostrar asteriscos
+            char asteriscos[PASSWORD_LENGTH + 1] = {0};
+            for (uint8_t i = 0; i < room->input_index; i++) {
+                asteriscos[i] = '*';
+            }
+            ssd1306_SetCursor(60, 10);
+            ssd1306_WriteString(asteriscos, Font_7x10, White);
             break;
             
         case ROOM_STATE_UNLOCKED:
             // TODO: Mostrar estado del sistema (temperatura, ventilador)
             ssd1306_SetCursor(10, 10);
-            ssd1306_WriteString("ACCESO OK", Font_7x10, White);
-            
-            snprintf(display_buffer, sizeof(display_buffer), "Temp: %.1fC", room->current_temperature);
+            //ssd1306_WriteString("ACCESO OK", Font_7x10, White);
+            snprintf(display_buffer, sizeof(display_buffer), "ADC:%d", (int)(room->current_temperature * 4095.0f / 50.0f));
+            // snprintf(display_buffer, sizeof(display_buffer), "ADC:%.0f", room->current_temperature * 4095.0f / 50.0f);
+            ssd1306_WriteString(display_buffer, Font_7x10, White);
+
+            snprintf(display_buffer, sizeof(display_buffer), "Temp: %dC", (int)(room->current_temperature));
+            // snprintf(display_buffer, sizeof(display_buffer), "Temp: %.1fC", room->current_temperature);
             ssd1306_SetCursor(10, 25);
             ssd1306_WriteString(display_buffer, Font_7x10, White);
             
@@ -295,6 +308,8 @@ static void room_control_update_fan(room_control_t *room) {
     // Ejemplo:
     // uint32_t pwm_value = (room->current_fan_level * 99) / 100;  // 0-99 para period=99
     // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, pwm_value);
+    uint32_t pwm_value = (room->current_fan_level * 99) / 100;  // 0-99 para period=99
+    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, pwm_value);
 }
 
 static fan_level_t room_control_calculate_fan_level(float temperature) {
