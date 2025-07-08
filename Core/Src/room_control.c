@@ -296,9 +296,9 @@ static void room_control_update_door(room_control_t *room) {
     // TODO: TAREA - Implementar control físico de la puerta
     // Ejemplo usando el pin DOOR_STATUS:
     if (room->door_locked) {
-        // HAL_GPIO_WritePin(DOOR_STATUS_GPIO_Port, DOOR_STATUS_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(DOOR_STATUS_GPIO_Port, DOOR_STATUS_Pin, GPIO_PIN_RESET);
     } else {
-        // HAL_GPIO_WritePin(DOOR_STATUS_GPIO_Port, DOOR_STATUS_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(DOOR_STATUS_GPIO_Port, DOOR_STATUS_Pin, GPIO_PIN_SET);
     }
 }
 
