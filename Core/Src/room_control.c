@@ -3,7 +3,6 @@
 #include "ssd1306_fonts.h"
 #include <string.h>
 #include <stdio.h>
-
 #include "main.h"
 
 
@@ -329,9 +328,12 @@ static void room_control_update_fan(room_control_t *room) {
     // Ejemplo:
     // uint32_t pwm_value = (room->current_fan_level * 99) / 100;  // 0-99 para period=99
     // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, pwm_value);
-    uint32_t pwm_value = (room->current_fan_level * 99) / 100;  // 0-99 para period=99
+    uint32_t pwm_value = 0;
+    if (room->current_fan_level > 0) {
+        pwm_value = (room->current_fan_level * 99) / 100;
+    }
     __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, pwm_value);
-}
+} 
 
 // Calcula el nivel del ventilador según la temperatura
 static fan_level_t room_control_calculate_fan_level(float temperature) {

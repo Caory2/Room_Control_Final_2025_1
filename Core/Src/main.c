@@ -27,6 +27,8 @@
 #include "room_control.h"
 #include <stdio.h>
 
+#include "temperature_sensor.h"
+
 #include "ssd1306.h"
 #include "ssd1306_fonts.h"
 
@@ -193,6 +195,11 @@ int main(void)
   // TODO: TAREA - Descomentar cuando implementen la lógica del sistema
   room_control_init(&room_system);
 
+  // Inicia el canal PWM del ventilador (TIM3_CH1)
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+
+  // Fuerza el ventilador al 100% para probar el hardware
+  room_control_force_fan_level(&room_system, FAN_LEVEL_HIGH);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -244,7 +251,7 @@ int main(void)
     // TODO: TAREA - Leer sensor de temperatura y actualizar sistema
     // float temperature = temperature_sensor_read();
     // room_control_set_temperature(&room_system, temperature);
-     float temperature = read_temperature();
+    float temperature = temperature_sensor_read(&hadc1);
     room_control_set_temperature(&room_system, temperature);
 
     /* USER CODE END WHILE */
