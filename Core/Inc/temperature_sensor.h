@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-float temperature_sensor_read(ADC_HandleTypeDef *hadc);
+float temperature_sensor_read(void);
 
 #ifdef __cplusplus
 }

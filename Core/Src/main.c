@@ -27,7 +27,9 @@
 #include "room_control.h"
 #include <stdio.h>
 
-#include "temperature_sensor.h"
+#include "temperature_sensor.h" // Include the temperature sensor header
+
+#include "command_parser.h" // Include the command parser header
 
 #include "ssd1306.h"
 #include "ssd1306_fonts.h"
@@ -63,12 +65,13 @@ UART_HandleTypeDef huart3;
 /* USER CODE BEGIN PV */
 uint8_t button_pressed = 0; // Flag to indicate if the button is pressed
 
+uint8_t usart_2_rxbyte = 0;
+uint8_t usart_3_rxbyte = 0;
+
 led_handle_t heartbeat_led = {
     .port = LD2_GPIO_Port,
     .pin = LD2_Pin
 };
-
-uint8_t usart_2_rxbyte = 0; // Variable to hold received byte from UART3
 
 keypad_handle_t keypad = {
     .row_ports = {KEYPAD_R1_GPIO_Port, KEYPAD_R2_GPIO_Port, KEYPAD_R3_GPIO_Port, KEYPAD_R4_GPIO_Port},
@@ -96,6 +99,7 @@ static void MX_I2C1_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_ADC1_Init(void);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -113,9 +117,23 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  if (huart->Instance == USART2) {
-    HAL_UART_Receive_IT(&huart2, &usart_2_rxbyte, 1);
-  }
+//    if (huart->Instance == USART3) {
+//        static uint8_t rx_byte_esp01;
+//        HAL_UART_Receive_IT(&huart3, &rx_byte_esp01, 1);
+//        command_parser_process_esp01(rx_byte_esp01);
+//    } else if (huart->Instance == USART2) {
+//        static uint8_t rx_byte_debug;
+//        HAL_UART_Receive_IT(&huart2, &rx_byte_debug, 1);
+//        command_parser_process_debug(rx_byte_debug);
+//    }
+    if (huart->Instance == USART3) {
+        HAL_UART_Receive_IT(&huart3, &usart_3_rxbyte, 1);
+        command_parser_process_esp01(usart_3_rxbyte);
+    } else if (huart->Instance == USART2) {
+        HAL_UART_Receive_IT(&huart2, &usart_2_rxbyte, 1);
+        command_parser_process_debug(usart_2_rxbyte);
+    }
+
 }
 
 
@@ -200,6 +218,13 @@ int main(void)
 
   // Fuerza el ventilador al 100% para probar el hardware
   room_control_force_fan_level(&room_system, FAN_LEVEL_HIGH);
+
+  // Inicia la recepción de datos por UART2 y UART3
+  HAL_UART_Receive_IT(&huart2, &usart_2_rxbyte, 1);
+
+  // Inicia la recepción de datos por UART3 (ESP01)
+  HAL_UART_Receive_IT(&huart3, &usart_3_rxbyte, 1);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -211,6 +236,7 @@ int main(void)
   ssd1306_WriteString("Hello, 4100901!", Font_7x10, White);
   ssd1306_UpdateScreen(); // Update the display to show the
   HAL_UART_Transmit(&huart2, (uint8_t *)"Hello, 4100901!\r\n", 17, HAL_MAX_DELAY);
+
 
 
 
@@ -251,7 +277,7 @@ int main(void)
     // TODO: TAREA - Leer sensor de temperatura y actualizar sistema
     // float temperature = temperature_sensor_read();
     // room_control_set_temperature(&room_system, temperature);
-    float temperature = temperature_sensor_read(&hadc1);
+    float temperature = temperature_sensor_read();
     room_control_set_temperature(&room_system, temperature);
 
     /* USER CODE END WHILE */
@@ -629,6 +655,17 @@ static void MX_GPIO_Init(void)
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
+    // USART3 TX: PC4
+  GPIO_InitStruct.Pin = GPIO_PIN_4;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  // USART3 RX: PC5
+  GPIO_InitStruct.Pin = GPIO_PIN_5;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
   /* USER CODE END MX_GPIO_Init_2 */
 }
 

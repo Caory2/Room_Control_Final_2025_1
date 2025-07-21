@@ -55,6 +55,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/room_control.c
     Core/Src/main.c
     Core/Src/temperature_sensor.c
+    Core/Src/command_parser.c
     # Add user sources here
 )
 
