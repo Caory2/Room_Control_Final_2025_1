@@ -6,10 +6,10 @@
 #include "main.h"
 #include "temperature_sensor.h" // Include the temperature sensor header
 
-
+// UART para comunicación con ESP-01
 extern UART_HandleTypeDef huart3;
 
-
+// Timer para control PWM del ventilador
 extern TIM_HandleTypeDef htim3; // Permite usar el timer 3 para el control PWM del ventilador
 
 // Default password
