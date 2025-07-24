@@ -318,6 +318,8 @@ El sistema permite control remoto vía comandos USART3 & Wifi en formato COMANDO
 ✅ Conclusiones
 Este proyecto permitió integrar periféricos, lógica de estado, protocolos de comunicación y diseño modular en un sistema funcional y eficiente. El uso de un patrón Super Loop no bloqueante y una máquina de estados clara garantizó una arquitectura mantenible, escalable y confiable para sistemas embebidos reactivos.
 
+---
+
 # 🚀 Guía de Funcionamiento – Sistema de Control de Sala
 
 **Versión final – Proyecto Integrador 2025**  
@@ -415,6 +417,7 @@ Host: mi-servidor.com
 
 Acceso denegado detectado
 
+---
 
 ### 🔧 RESUMEN DEL HARDWARE
 
@@ -429,6 +432,8 @@ Acceso denegado detectado
 | Botón Azul (B1)       | Control local de Tset                    |
 | GPIO PA4              | Simula apertura de puerta (DOOR\_STATUS) |
 | LED Heartbeat (LD2)   | Indica que el sistema está vivo          |
+
+---
 
 ### 🧪 EJEMPLOS DE USO
 ## ✅ Caso 1: Acceder a la sala
@@ -447,6 +452,7 @@ Ingreso: 5, 5, 5, 5, #
 Pantalla: ACCESO DENEGADO
 Acción: Se envía alerta HTTP al servidor
 
+---
 ###📝 Recomendaciones Finales
 Asegúrate de que el ESP-01 esté correctamente alimentado y conectado a la red WiFi.
 
@@ -454,6 +460,7 @@ Usa el botón azul (B1) con pulsaciones prolongadas para ajustar temperatura (Ts
 
 No dejes el sistema en estado UNLOCKED por largos períodos sin supervisión.
 
+---
 ###📁 Archivos Principales del Proyecto
 | Archivo                   | Función                              |
 | ------------------------- | ------------------------------------ |
