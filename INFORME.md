@@ -276,23 +276,23 @@ El sistema permite control remoto vía comandos USART3 & Wifi en formato COMANDO
 
 **Evidencia GET_TEMP**
 
-![alt text](image-4.png)
+![WhatsApp Image 2025-07-24 at 12 33 27 PM](https://github.com/user-attachments/assets/6fcfaa2b-74f8-452c-891c-ab2bbd5979f3)
 
 **Evidencia GEt_STATUS**
 
-![alt text](image-3.png)
+![WhatsApp Image 2025-07-24 at 12 33 27 PM (1)](https://github.com/user-attachments/assets/2c35a7d8-9997-4c0a-abd4-aae502bee31c)
+
 
 **Evidencia SET_PASS:XXXX**
 
-![alt text](image-5.png)
+![WhatsApp Image 2025-07-24 at 12 33 27 PM (2)](https://github.com/user-attachments/assets/c579f8ec-fe7d-468d-b0dc-d788c7303c6d)
 
 **Cuando se introduce mal contraseña**
-![alt text](image-2.png)
+![WhatsApp Image 2025-07-24 at 12 33 27 PM (3)](https://github.com/user-attachments/assets/6d0f280e-92d6-49c0-a633-b7262fe5cfaa)
 
 **Evidencia FORCE_FAN:**
 
-![alt text](image-1.png)
-
+![WhatsApp Image 2025-07-24 at 12 33 28 PM (1)](https://github.com/user-attachments/assets/6780c932-a221-41a9-85d5-c90a9bb57177)
 
 ---
 
