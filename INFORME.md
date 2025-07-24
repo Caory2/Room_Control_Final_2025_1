@@ -55,14 +55,16 @@ Pero también tiene limitaciones que hay que considerar:
 
 ### Diagrama de bloques del funcionamiento del programa 
 ---
+
+## Diagrama de bloques de main: 
 ![WhatsApp Image 2025-07-24 at 1 28 54 PM (1)](https://github.com/user-attachments/assets/1dddd117-c7f1-40ff-8aed-c53f1bc2dd14)
 
 ---
-
+## Diagrama de bloques de command_parser.c:
 ![WhatsApp Image 2025-07-24 at 1 21 40 PM (1)](https://github.com/user-attachments/assets/2d13a23c-3b98-4183-b7e4-da9c46b31c8a)
 
 ---
-
+## Diagrama de bloques de sensor_temperature.c:
 ![WhatsApp Image 2025-07-24 at 1 30 31 PM (1)](https://github.com/user-attachments/assets/a14cd7fc-a80f-4811-bca9-9f9532c76471)
 
 
