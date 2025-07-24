@@ -419,57 +419,43 @@ Acceso denegado detectado
 
 ---
 
-### 🔧 RESUMEN DEL HARDWARE
+# 🔐 Sistema de Control de Sala con STM32 + WiFi
 
-| Componente            | Función                                  |
-| --------------------- | ---------------------------------------- |
-| STM32 Nucleo-L476RG   | Microcontrolador principal               |
-| Teclado 4x4           | Ingreso de contraseña                    |
-| Pantalla OLED SSD1306 | Interfaz de usuario                      |
-| ESP-01 (USART3)       | Comunicación remota vía WiFi             |
-| Sensor de Temperatura | Lectura analógica (ADC1)                 |
-| Ventilador (PWM)      | Controlado por TIM3 → PA6                |
-| Botón Azul (B1)       | Control local de Tset                    |
-| GPIO PA4              | Simula apertura de puerta (DOOR\_STATUS) |
-| LED Heartbeat (LD2)   | Indica que el sistema está vivo          |
+Este proyecto implementa un sistema embebido de control de acceso a una sala usando un microcontrolador **STM32 Nucleo-L476RG**, teclado matricial, pantalla OLED, sensor de temperatura y comunicación WiFi mediante un módulo ESP-01. Se incluye interfaz local y remota para operación, junto con control PWM de un ventilador.
 
 ---
 
-### 🧪 EJEMPLOS DE USO
-## ✅ Caso 1: Acceder a la sala
-Pantalla: SISTEMA BLOQUEADO
-Ingreso: 1, 2, 3, 4, #
-Resultado: Acceso concedido → se activa ventilador y control WiFi
-##🌐 Caso 2: Control WiFi desde interfaz web
-Comando enviado: GET_STATUS
-Respuesta: UNLOCKED, FAN:50%
+## 🔧 RESUMEN DEL HARDWARE
 
-Comando enviado: FORCE_FAN:3
-Resultado: Ventilador al 100%
-
-##❌ Caso 3: Acceso denegado
-Ingreso: 5, 5, 5, 5, #
-Pantalla: ACCESO DENEGADO
-Acción: Se envía alerta HTTP al servidor
+| Componente             | Función                                       |
+|------------------------|-----------------------------------------------|
+| STM32 Nucleo-L476RG    | Microcontrolador principal                    |
+| Teclado 4x4            | Ingreso de contraseña                         |
+| Pantalla OLED SSD1306  | Interfaz de usuario                           |
+| ESP-01 (USART3)        | Comunicación remota vía WiFi                  |
+| Sensor de Temperatura  | Lectura analógica (ADC1)                      |
+| Ventilador (PWM)       | Controlado por TIM3 → PA6                     |
+| Botón Azul (B1)        | Control local de Tset                         |
+| GPIO PA4               | Simula apertura de puerta (DOOR_STATUS)       |
+| LED Heartbeat (LD2)    | Indica que el sistema está vivo              |
 
 ---
-###📝 Recomendaciones Finales
-Asegúrate de que el ESP-01 esté correctamente alimentado y conectado a la red WiFi.
 
-Usa el botón azul (B1) con pulsaciones prolongadas para ajustar temperatura (Tset).
+## ⚙️ FUNCIONAMIENTO GENERAL
 
-No dejes el sistema en estado UNLOCKED por largos períodos sin supervisión.
+- **Inicio**: El sistema inicia en modo `SISTEMA BLOQUEADO` esperando contraseña.
+- **Desbloqueo**: Al ingresar la contraseña correcta, se habilita el ventilador y comandos remotos vía WiFi.
+- **Temperatura**: Se actualiza continuamente en la pantalla. Control automático del ventilador según Tset.
+- **WiFi**: Permite enviar comandos como `GET_STATUS`, `SET_TEMP`, `FORCE_FAN`, entre otros.
+- **Bloqueo**: Se puede bloquear manual o automáticamente tras tiempo de inactividad.
 
 ---
-###📁 Archivos Principales del Proyecto
-| Archivo                   | Función                              |
-| ------------------------- | ------------------------------------ |
-| `main.c`                  | Super loop y configuración general   |
-| `room_control.c/.h`       | Máquina de estados y lógica central  |
-| `temperature_sensor.c/.h` | Lectura de temperatura con ADC1      |
-| `command_parser.c/.h`     | Análisis de comandos UART / WiFi     |
-| `ssd1306.c/.h`            | Controlador para pantalla OLED       |
-| `keypad.c/.h`             | Lectura y debouncing del teclado 4x4 |
+
+## 🧪 EJEMPLOS DE USO
+
+### ✅ Caso 1: Acceder a la sala
+
+
 
 
 
