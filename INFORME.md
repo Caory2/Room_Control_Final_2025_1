@@ -318,6 +318,59 @@ El sistema permite control remoto vía comandos USART3 & Wifi en formato COMANDO
 ✅ Conclusiones
 Este proyecto permitió integrar periféricos, lógica de estado, protocolos de comunicación y diseño modular en un sistema funcional y eficiente. El uso de un patrón Super Loop no bloqueante y una máquina de estados clara garantizó una arquitectura mantenible, escalable y confiable para sistemas embebidos reactivos.
 
+# 🚀 Guía de Funcionamiento – Sistema de Control de Sala
+
+**Versión final – Proyecto Integrador 2025**  
+**Plataforma:** STM32 Nucleo-L476RG + ESP-01 + Periféricos externos
+
+---
+
+## 🎯 Objetivo del Sistema
+
+El sistema permite controlar **remotamente y localmente** el acceso a una habitación y regular su temperatura mediante sensores, pantalla OLED, teclado matricial, ventilador y conectividad WiFi.
+
+---
+
+## 🔐 MODOS DE FUNCIONAMIENTO
+
+El sistema funciona mediante una **máquina de estados**. Estos son:
+
+| Estado           | Descripción                                                   |
+|------------------|---------------------------------------------------------------|
+| `LOCKED`         | El sistema está bloqueado. Solo muestra “SISTEMA BLOQUEADO”.  |
+| `INPUT_PASSWORD` | Se ingresa una contraseña mediante el teclado 4x4.            |
+| `UNLOCKED`       | Acceso concedido. Se activa la ventilación y control remoto.  |
+| `ACCESS_DENIED`  | Contraseña incorrecta. Muestra advertencia y vuelve a LOCKED. |
+
+---
+
+## 🔘 USO LOCAL (Frente al dispositivo)
+
+### 🧮 Ingreso de Contraseña
+
+1. En pantalla aparece: **“SISTEMA BLOQUEADO”**
+2. Presiona cualquier tecla para comenzar.
+3. Ingresa los **4 dígitos** de la contraseña con el teclado 4x4.  
+   - Se mostrarán asteriscos `*` por cada dígito ingresado.
+4. Presiona `#` para confirmar.
+
+**Resultado:**
+
+- ✅ Correcta → acceso concedido (estado `UNLOCKED`)
+- ❌ Incorrecta → “ACCESO DENEGADO” por 3 segundos y vuelve a `LOCKED`
+
+> 🔁 Puedes volver a bloquear el sistema desde `UNLOCKED` presionando `*`.
+
+---
+
+### 🌡️ Control de Temperatura y Ventilación
+
+**Visualización en Pantalla (estado UNLOCKED):**
+
+SISTEMA: ON
+Tset: 24°C
+Tactual: 27°C
+Fan: 75%
 
 
 - **Tset:** Temperatura deseada (editable)
@@ -349,7 +402,7 @@ Conectado al **ESP8266 (USART3)**. Se pueden enviar comandos desde una interfaz 
 
 ---
 
-## 🚨 ALERTAS DE SEGURIDAD
+### 🚨 ALERTAS DE SEGURIDAD
 
 Si se ingresa una contraseña incorrecta:
 
@@ -362,4 +415,51 @@ Host: mi-servidor.com
 
 Acceso denegado detectado
 
+### 🔧 RESUMEN DEL HARDWARE
+
+| Componente            | Función                                  |
+| --------------------- | ---------------------------------------- |
+| STM32 Nucleo-L476RG   | Microcontrolador principal               |
+| Teclado 4x4           | Ingreso de contraseña                    |
+| Pantalla OLED SSD1306 | Interfaz de usuario                      |
+| ESP-01 (USART3)       | Comunicación remota vía WiFi             |
+| Sensor de Temperatura | Lectura analógica (ADC1)                 |
+| Ventilador (PWM)      | Controlado por TIM3 → PA6                |
+| Botón Azul (B1)       | Control local de Tset                    |
+| GPIO PA4              | Simula apertura de puerta (DOOR\_STATUS) |
+| LED Heartbeat (LD2)   | Indica que el sistema está vivo          |
+
+### 🧪 EJEMPLOS DE USO
+## ✅ Caso 1: Acceder a la sala
+Pantalla: SISTEMA BLOQUEADO
+Ingreso: 1, 2, 3, 4, #
+Resultado: Acceso concedido → se activa ventilador y control WiFi
+##🌐 Caso 2: Control WiFi desde interfaz web
+Comando enviado: GET_STATUS
+Respuesta: UNLOCKED, FAN:50%
+
+Comando enviado: FORCE_FAN:3
+Resultado: Ventilador al 100%
+
+##❌ Caso 3: Acceso denegado
+Ingreso: 5, 5, 5, 5, #
+Pantalla: ACCESO DENEGADO
+Acción: Se envía alerta HTTP al servidor
+
+###📝 Recomendaciones Finales
+Asegúrate de que el ESP-01 esté correctamente alimentado y conectado a la red WiFi.
+
+Usa el botón azul (B1) con pulsaciones prolongadas para ajustar temperatura (Tset).
+
+No dejes el sistema en estado UNLOCKED por largos períodos sin supervisión.
+
+###📁 Archivos Principales del Proyecto
+| Archivo                   | Función                              |
+| ------------------------- | ------------------------------------ |
+| `main.c`                  | Super loop y configuración general   |
+| `room_control.c/.h`       | Máquina de estados y lógica central  |
+| `temperature_sensor.c/.h` | Lectura de temperatura con ADC1      |
+| `command_parser.c/.h`     | Análisis de comandos UART / WiFi     |
+| `ssd1306.c/.h`            | Controlador para pantalla OLED       |
+| `keypad.c/.h`             | Lectura y debouncing del teclado 4x4 |
 
