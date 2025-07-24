@@ -53,10 +53,15 @@ Pero también tiene limitaciones que hay que considerar:
 | ESP-01 (esp-link) | USART3 (TX/RX)       | UART             | Control remoto por WiFi                 |
 | Consola Debug PC  | USART2 (ST-Link USB) | UART             | Depuración local                        |
 
-
+### Diagrama de bloques del funcionamiento del programa 
+---
 ![WhatsApp Image 2025-07-24 at 1 28 54 PM (1)](https://github.com/user-attachments/assets/1dddd117-c7f1-40ff-8aed-c53f1bc2dd14)
 
+---
+
 ![WhatsApp Image 2025-07-24 at 1 21 40 PM (1)](https://github.com/user-attachments/assets/2d13a23c-3b98-4183-b7e4-da9c46b31c8a)
+
+---
 
 ![WhatsApp Image 2025-07-24 at 1 30 31 PM (1)](https://github.com/user-attachments/assets/a14cd7fc-a80f-4811-bca9-9f9532c76471)
 
@@ -455,7 +460,71 @@ Este proyecto implementa un sistema embebido de control de acceso a una sala usa
 
 ### ✅ Caso 1: Acceder a la sala
 
+Pantalla: SISTEMA BLOQUEADO
+Ingreso: 1, 2, 3, 4, #
+Resultado: Acceso concedido → se activa ventilador y control WiFi
 
 
+### 🌐 Caso 2: Control WiFi desde interfaz web
+
+Comando enviado: GET_STATUS
+Respuesta: UNLOCKED, FAN:50%
+
+Comando enviado: FORCE_FAN:3
+Resultado: Ventilador al 100%
+
+
+### ❌ Caso 3: Acceso denegado
+
+Ingreso: 5, 5, 5, 5, #
+Pantalla: ACCESO DENEGADO
+Acción: Se envía alerta HTTP al servidor
+
+
+
+---
+
+## 🔌 BOTONES Y FUNCIONES
+
+| Entrada           | Función                                       |
+|-------------------|-----------------------------------------------|
+| Teclado 4x4       | Ingreso de contraseña y navegación            |
+| Botón Azul (B1)   | Ajusta localmente el valor de temperatura deseada (Tset) |
+| UART3 (ESP-01)    | Comandos remotos WiFi                         |
+
+---
+
+## 🌡️ CONTROL DE TEMPERATURA
+
+- El sistema lee la temperatura vía **ADC1**.
+- Si la temperatura actual > Tset, el ventilador se activa proporcionalmente (PWM).
+- Se muestra tanto la temperatura medida como el porcentaje de ventilador en la pantalla OLED.
+
+
+## 📝 RECOMENDACIONES FINALES
+
+- Asegúrate de que el **ESP-01** esté correctamente alimentado y conectado a la red WiFi.
+- Usa el **botón azul (B1)** con pulsaciones prolongadas para ajustar la temperatura deseada (Tset).
+- No dejes el sistema en estado **UNLOCKED** por largos períodos sin supervisión.
+- Verifica que la contraseña esté protegida contra acceso no autorizado.
+
+---
+
+## 📁 ARCHIVOS PRINCIPALES DEL PROYECTO
+
+| Archivo                  | Función                                     |
+|--------------------------|---------------------------------------------|
+| `main.c`                 | Super loop y configuración general          |
+| `room_control.c/.h`      | Máquina de estados y lógica central         |
+| `temperature_sensor.c/.h`| Lectura de temperatura con ADC1             |
+| `command_parser.c/.h`    | Análisis de comandos UART / WiFi            |
+| `ssd1306.c/.h`           | Controlador para pantalla OLED              |
+| `keypad.c/.h`            | Lectura y debouncing del teclado 4x4        |
+
+---
+
+## 👨‍💻 Autor
+
+Este proyecto fue desarrollado como sistema embebido educativo, integrando hardware físico y lógica de control.
 
 
