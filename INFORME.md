@@ -415,6 +415,7 @@ Host: mi-servidor.com
 
 Acceso denegado detectado
 
+
 ### 🔧 RESUMEN DEL HARDWARE
 
 | Componente            | Función                                  |
@@ -462,4 +463,6 @@ No dejes el sistema en estado UNLOCKED por largos períodos sin supervisión.
 | `command_parser.c/.h`     | Análisis de comandos UART / WiFi     |
 | `ssd1306.c/.h`            | Controlador para pantalla OLED       |
 | `keypad.c/.h`             | Lectura y debouncing del teclado 4x4 |
+
+
 
