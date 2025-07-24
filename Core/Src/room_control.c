@@ -6,6 +6,10 @@
 #include "main.h"
 
 
+
+extern UART_HandleTypeDef huart3;
+
+
 extern TIM_HandleTypeDef htim3; // Permite usar el timer 3 para el control PWM del ventilador
 
 // Default password
@@ -215,8 +219,10 @@ fan_level_t room_control_get_fan_level(room_control_t *room) {
     return room->current_fan_level;
 }
 
+
 float room_control_get_temperature(room_control_t *room) {
-    return room->current_temperature;
+    // Ignora room->current_temperature y retorna el valor real del sensor
+    return temperature_sensor_read();
 }
 
 // Private functions // Cambia de estado y realiza acciones de entrada a cada estado
@@ -238,7 +244,12 @@ static void room_control_change_state(room_control_t *room, room_state_t new_sta
             break;
             
         case ROOM_STATE_ACCESS_DENIED:
-            room_control_clear_input(room);   // Limpia el buffer de entrada
+            room_control_clear_input(room);
+            // Enviar alerta HTTP al ESP-01
+            {
+                char alert_msg[] = "POST /alert HTTP/1.1\r\nHost: mi-servidor.com\r\n\r\nAcceso denegado detectado\r\n";
+                HAL_UART_Transmit(&huart3, (uint8_t*)alert_msg, strlen(alert_msg), 1000);
+            }
             break;
             
         default:
@@ -291,10 +302,20 @@ static void room_control_update_display(room_control_t *room) {
             ssd1306_WriteString(display_buffer, Font_7x10, White);
             
             // Mostrar nivel de ventilador
-            snprintf(display_buffer, sizeof(display_buffer), "Fan: %d%%", room->current_fan_level);
+            int fan_percent = 0;
+            switch (room->current_fan_level) {
+                case FAN_LEVEL_OFF:  fan_percent = 0; break;
+                case FAN_LEVEL_LOW:  fan_percent = 30; break;
+                case FAN_LEVEL_MED:  fan_percent = 70; break;
+                case FAN_LEVEL_HIGH: fan_percent = 100; break;
+                default: fan_percent = 0; break;
+            }
+            snprintf(display_buffer, sizeof(display_buffer), "Fan: %d%%", fan_percent);
             ssd1306_SetCursor(10, 40);
             ssd1306_WriteString(display_buffer, Font_7x10, White);
+            
             break;
+
             
         case ROOM_STATE_ACCESS_DENIED:
             ssd1306_SetCursor(10, 10);
@@ -328,10 +349,7 @@ static void room_control_update_fan(room_control_t *room) {
     // Ejemplo:
     // uint32_t pwm_value = (room->current_fan_level * 99) / 100;  // 0-99 para period=99
     // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, pwm_value);
-    uint32_t pwm_value = 0;
-    if (room->current_fan_level > 0) {
-        pwm_value = (room->current_fan_level * 99) / 100;
-    }
+    uint32_t pwm_value = (room->current_fan_level * 99) / 3;  // 0, 33, 66, 99
     __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, pwm_value);
 } 
 

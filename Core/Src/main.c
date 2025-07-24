@@ -63,6 +63,14 @@ UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
+#define RX_BUFFER_SIZE 64
+char usart2_rx_buffer[RX_BUFFER_SIZE];
+uint8_t usart2_rx_index = 0;
+
+#define RX3_BUFFER_SIZE 64
+char usart3_rx_buffer[RX3_BUFFER_SIZE];
+uint8_t usart3_rx_index = 0;
+
 uint8_t button_pressed = 0; // Flag to indicate if the button is pressed
 
 uint8_t usart_2_rxbyte = 0;
@@ -117,21 +125,17 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-//    if (huart->Instance == USART3) {
-//        static uint8_t rx_byte_esp01;
-//        HAL_UART_Receive_IT(&huart3, &rx_byte_esp01, 1);
-//        command_parser_process_esp01(rx_byte_esp01);
-//    } else if (huart->Instance == USART2) {
-//        static uint8_t rx_byte_debug;
-//        HAL_UART_Receive_IT(&huart2, &rx_byte_debug, 1);
-//        command_parser_process_debug(rx_byte_debug);
-//    }
+  
     if (huart->Instance == USART3) {
-        HAL_UART_Receive_IT(&huart3, &usart_3_rxbyte, 1);
+        // Procesa el byte recibido por ESP-01 (USART3)
         command_parser_process_esp01(usart_3_rxbyte);
+        // Vuelve a habilitar la recepción por interrupción
+      
+      HAL_UART_Receive_IT(&huart3, &usart_3_rxbyte, 1);
     } else if (huart->Instance == USART2) {
-        HAL_UART_Receive_IT(&huart2, &usart_2_rxbyte, 1);
+        // Si quieres procesar comandos por debug (USART2), puedes usar:
         command_parser_process_debug(usart_2_rxbyte);
+      HAL_UART_Receive_IT(&huart2, &usart_2_rxbyte, 1);
     }
 
 }
@@ -205,7 +209,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   led_init(&heartbeat_led);
   ssd1306_Init();
-  HAL_UART_Receive_IT(&huart2, &usart_2_rxbyte, 1);
+  HAL_UART_Receive_IT(&huart3, &usart_3_rxbyte, 1);
   
   ring_buffer_init(&keypad_rb, keypad_buffer, KEYPAD_BUFFER_LEN);
   keypad_init(&keypad);
@@ -242,7 +246,7 @@ int main(void)
 
   while (1) {
     heartbeat(); // Call the heartbeat function to toggle the LED
-    
+
 
     // TODO: TAREA - Descomentar cuando implementen la máquina de estados
     room_control_update(&room_system);
@@ -265,11 +269,7 @@ int main(void)
       button_pressed = 0; // Reset the flag
     }
 
-    // DEMO: UART functionality - Remove when implementing room control logic
-    if (usart_2_rxbyte != 0) {
-      write_to_oled((char *)&usart_2_rxbyte, White, 31, 31); // Display received byte on OLED
-      usart_2_rxbyte = 0; // Reset the received byte variable
-    }
+    
 
     // TODO: TAREA - Implementar procesamiento de comandos remotos
     // command_parser_process(); // Procesar comandos de UART2 y UART3
@@ -277,8 +277,11 @@ int main(void)
     // TODO: TAREA - Leer sensor de temperatura y actualizar sistema
     // float temperature = temperature_sensor_read();
     // room_control_set_temperature(&room_system, temperature);
-    float temperature = temperature_sensor_read();
-    room_control_set_temperature(&room_system, temperature);
+    float temp = temperature_sensor_read();
+    room_control_set_temperature(&room_system, temp);
+
+  
+    room_control_update(&room_system);
 
     /* USER CODE END WHILE */
 
