@@ -39,8 +39,9 @@ Pero también tiene limitaciones que hay que considerar:
 
 ### 🔌 Diagrama de Conexiones
 
+![WhatsApp Image 2025-07-24 at 12 33 28 PM](https://github.com/user-attachments/assets/781fd5a2-41cb-4cfb-8745-3f4c1fc2b49f)
 
-![alt text](image.png)
+
 
 | Componente        | Interfaz STM32       | Periférico Clave | Observaciones                           |
 | ----------------- | -------------------- | ---------------- | --------------------------------------- |
@@ -54,7 +55,7 @@ Pero también tiene limitaciones que hay que considerar:
 
 
 
-![alt text](<Untitled diagram _ Mermaid Chart-2025-07-15-170810-1.png>)
+
 
 ## ⚙️ Funciones Implementadas en el Sistema
 
