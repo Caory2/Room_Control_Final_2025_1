@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "main.h"
-
+#include "temperature_sensor.h" // Include the temperature sensor header
 
 
 extern UART_HandleTypeDef huart3;
@@ -221,7 +221,7 @@ fan_level_t room_control_get_fan_level(room_control_t *room) {
 
 
 float room_control_get_temperature(room_control_t *room) {
-    // Ignora room->current_temperature y retorna el valor real del sensor
+    (void)room;// Ignora room->current_temperature y retorna el valor real del sensor
     return temperature_sensor_read();
 }
 
