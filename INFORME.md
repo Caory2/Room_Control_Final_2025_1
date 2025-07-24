@@ -54,7 +54,11 @@ Pero también tiene limitaciones que hay que considerar:
 | Consola Debug PC  | USART2 (ST-Link USB) | UART             | Depuración local                        |
 
 
+![WhatsApp Image 2025-07-24 at 1 28 54 PM (1)](https://github.com/user-attachments/assets/1dddd117-c7f1-40ff-8aed-c53f1bc2dd14)
 
+![WhatsApp Image 2025-07-24 at 1 21 40 PM (1)](https://github.com/user-attachments/assets/2d13a23c-3b98-4183-b7e4-da9c46b31c8a)
+
+![WhatsApp Image 2025-07-24 at 1 30 31 PM (1)](https://github.com/user-attachments/assets/a14cd7fc-a80f-4811-bca9-9f9532c76471)
 
 
 ## ⚙️ Funciones Implementadas en el Sistema
