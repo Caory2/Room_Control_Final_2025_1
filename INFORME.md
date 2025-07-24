@@ -317,3 +317,126 @@ El sistema permite control remoto vía comandos USART3 & Wifi en formato COMANDO
 
 ✅ Conclusiones
 Este proyecto permitió integrar periféricos, lógica de estado, protocolos de comunicación y diseño modular en un sistema funcional y eficiente. El uso de un patrón Super Loop no bloqueante y una máquina de estados clara garantizó una arquitectura mantenible, escalable y confiable para sistemas embebidos reactivos.
+
+🚀 Guía de Funcionamiento – Sistema de Control de Sala
+Versión final – Proyecto Integrador 2025
+Plataforma: STM32 Nucleo-L476RG + ESP-01 + Periféricos externos
+
+🎯 Objetivo del Sistema
+El sistema permite controlar remotamente y localmente el acceso a una habitación y regular su temperatura mediante sensores, pantalla OLED, teclado matricial, ventilador, y conectividad WiFi.
+
+🔐 MODOS DE FUNCIONAMIENTO
+El sistema funciona mediante una máquina de estados. Estos son:
+
+Estado	Descripción breve
+LOCKED	El sistema está bloqueado. Solo muestra “SISTEMA BLOQUEADO”.
+INPUT_PASSWORD	Se ingresa una contraseña mediante el teclado 4x4.
+UNLOCKED	Acceso concedido. Se activa la ventilación automática y se habilita control WiFi.
+ACCESS_DENIED	Contraseña incorrecta. Muestra advertencia y vuelve a LOCKED.
+
+🔘 USO LOCAL (Frente al dispositivo)
+🧮 Ingreso de Contraseña
+En pantalla aparece: “SISTEMA BLOQUEADO”
+
+Presiona cualquier tecla para comenzar.
+
+Ingresa los 4 dígitos de la contraseña con el teclado 4x4.
+
+Asteriscos (*) indican los dígitos ingresados.
+
+Presiona # para confirmar.
+
+Resultado:
+
+✅ Correcta → acceso concedido (estado UNLOCKED)
+
+❌ Incorrecta → “ACCESO DENEGADO” por 3 segundos y vuelve a LOCKED
+
+🔁 Puedes volver a bloquear el sistema desde UNLOCKED presionando *.
+
+🌡️ Control de Temperatura y Ventilación
+Visualización en Pantalla (estado UNLOCKED):
+vbnet
+Copy
+Edit
+SISTEMA: ON
+Tset: 24°C
+Tactual: 27°C
+Fan: 75%
+Tset: Temperatura deseada (editable)
+
+Tactual: Temperatura ambiente medida
+
+Fan: Nivel automático del ventilador (0-100%)
+
+Modificar Tset:
+Mantén presionado el botón azul (B1) por ≥2 segundos
+→ Aumenta Tset en 1°C (máximo 30°C, mínimo 15°C)
+
+📡 USO REMOTO (Vía WiFi / ESP-01)
+Conectado al ESP8266 (USART3). Se pueden enviar comandos desde una página web o consola UART.
+
+🧾 Comandos disponibles:
+Comando	Función	Ejemplo
+GET_TEMP	Devuelve temperatura actual	→ T:26.4°C
+GET_STATUS	Estado general del sistema	→ UNLOCKED, FAN:75%
+SET_PASS:1234	Cambia la contraseña del sistema	
+FORCE_FAN:N	Fuerza nivel de ventilador (0 = apagado, 3 = 100%)	FORCE_FAN:2
+
+⚠️ Comandos solo válidos en estado UNLOCKED.
+
+🚨 ALERTAS DE SEGURIDAD
+Si se ingresa una contraseña incorrecta:
+
+Estado ACCESS_DENIED
+
+Se muestra en pantalla y se envía una alerta HTTP por WiFi al servidor configurado:
+
+bash
+Copy
+Edit
+POST /alert HTTP/1.1
+Host: mi-servidor.com
+
+Acceso denegado detectado
+🔧 RESUMEN DEL HARDWARE
+Componente	Función
+STM32 Nucleo-L476RG	Microcontrolador principal
+Teclado 4x4	Ingreso de contraseña
+Pantalla OLED SSD1306	Interfaz de usuario
+ESP-01 (USART3)	Comunicación remota vía WiFi
+Sensor de Temperatura	Lectura analógica con ADC1
+Ventilador (PWM)	Regulado por TIM3 → PA6
+Botón Azul (B1)	Control local de Tset
+GPIO PA4	Simula apertura de puerta (DOOR_STATUS)
+LED Heartbeat (LD2)	Indica que el sistema está vivo
+
+🧪 EJEMPLOS DE USO
+Caso 1: Acceder a la sala
+Aparece: “SISTEMA BLOQUEADO”
+
+Ingreso: 1, 2, 3, 4, #
+
+Acceso concedido → temperatura y ventilador activos
+
+Caso 2: Control WiFi desde interfaz web
+Enviar GET_STATUS
+
+Recibe: UNLOCKED, FAN:50%
+
+Enviar FORCE_FAN:3 → ventilador al 100%
+
+Caso 3: Acceso denegado
+Ingreso: 5, 5, 5, 5, #
+
+Pantalla: “ACCESO DENEGADO”
+
+Se envía alerta al servidor
+
+📝 Recomendaciones Finales
+Verifica que el ESP-01 tenga conectividad activa al iniciar.
+
+Usa el botón azul con pulsaciones cortas para pruebas rápidas.
+
+No dejes el sistema sin LOCKED en estado inactivo.
+
