@@ -411,7 +411,7 @@ Si se ingresa una contraseña incorrecta:
 - Entra al estado `ACCESS_DENIED`
 - Se muestra en pantalla y se envía una **alerta HTTP** al servidor:
 
-```http
+http
 POST /alert HTTP/1.1
 Host: mi-servidor.com
 
